@@ -1,27 +1,24 @@
-// src/server/actions/user.actions.ts
+// src/server/actions/auth.ts
 
 'use server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
-export async function signUp(formData: FormData) {
+export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
   const supabase = createSupabaseServerClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-    },
   });
 
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect('/login?message=Success! Please check your email for confirmation.');
+  redirect('/dashboard');
 }
